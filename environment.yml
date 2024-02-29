@@ -1,0 +1,27 @@
+name: dat-light-packaged
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python
+  - pip
+  - pytorch-cpu
+  - timm
+  - einops
+  - pip:
+      # - addict
+      # - future
+      # - lmdb
+      # - numpy>=1.17
+      # - opencv-python
+      # - Pillow
+      # - pyyaml
+      # - requests
+      # - scikit-image
+      # - scipy
+      # - tb-nightly
+      # - torchvision
+      # - tqdm
+      # - yapf
+      # - h5py
