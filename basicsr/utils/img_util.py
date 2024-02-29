@@ -4,7 +4,8 @@ import os
 
 import numpy as np
 import torch
-from torchvision.utils import make_grid
+
+# from torchvision.utils import make_grid
 
 
 def img2tensor(imgs, bgr2rgb=True, float32=True):

@@ -6,11 +6,31 @@ import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
 from einops import rearrange
 from einops.layers.torch import Rearrange
-from timm.models.layers import DropPath, trunc_normal_
-from torch import Tensor
 from torch.nn import functional as F
 
-from basicsr.utils.registry import ARCH_REGISTRY
+
+def drop_path(
+    x, drop_prob: float = 0.0, training: bool = False, scale_by_keep: bool = True
+):
+    """Drop paths (Stochastic Depth) per sample (when applied in main path of residual blocks).
+
+    This is the same as the DropConnect impl I created for EfficientNet, etc networks, however,
+    the original name is misleading as 'Drop Connect' is a different form of dropout in a separate paper...
+    See discussion: https://github.com/tensorflow/tpu/issues/494#issuecomment-532968956 ... I've opted for
+    changing the layer and argument names to 'drop path' rather than mix DropConnect as a layer name and use
+    'survival rate' as the argument.
+
+    """
+    if drop_prob == 0.0 or not training:
+        return x
+    keep_prob = 1 - drop_prob
+    shape = (x.shape[0],) + (1,) * (
+        x.ndim - 1
+    )  # work with diff dim tensors, not just 2D ConvNets
+    random_tensor = x.new_empty(shape).bernoulli_(keep_prob)
+    if keep_prob > 0.0 and scale_by_keep:
+        random_tensor.div_(keep_prob)
+    return x * random_tensor
 
 
 def img2windows(img, H_sp, W_sp):
@@ -36,6 +56,21 @@ def windows2img(img_splits_hw, H_sp, W_sp, H, W):
     img = img_splits_hw.view(B, H // H_sp, W // W_sp, H_sp, W_sp, -1)
     img = img.permute(0, 1, 3, 2, 4, 5).contiguous().view(B, H, W, -1)
     return img
+
+
+class DropPath(nn.Module):
+    """Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks)."""
+
+    def __init__(self, drop_prob: float = 0.0, scale_by_keep: bool = True):
+        super(DropPath, self).__init__()
+        self.drop_prob = drop_prob
+        self.scale_by_keep = scale_by_keep
+
+    def forward(self, x):
+        return drop_path(x, self.drop_prob, self.training, self.scale_by_keep)
+
+    def extra_repr(self):
+        return f"drop_prob={round(self.drop_prob,3):0.3f}"
 
 
 class SpatialGate(nn.Module):
@@ -892,7 +927,6 @@ class UpsampleOneStep(nn.Sequential):
         return flops
 
 
-@ARCH_REGISTRY.register()
 class DAT(nn.Module):
     """Dual Aggregation Transformer
     Args:
@@ -1027,7 +1061,7 @@ class DAT(nn.Module):
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
-            trunc_normal_(m.weight, std=0.02)
+            nn.init.trunc_normal_(m.weight, std=0.02)
             if isinstance(m, nn.Linear) and m.bias is not None:
                 nn.init.constant_(m.bias, 0)
         elif isinstance(
@@ -1068,32 +1102,3 @@ class DAT(nn.Module):
 
         x = x / self.img_range + self.mean
         return x
-
-
-if __name__ == "__main__":
-    upscale = 1
-    height = 64
-    width = 64
-    model = (
-        DAT(
-            upscale=2,
-            in_chans=3,
-            img_size=64,
-            img_range=1.0,
-            depth=[6, 6, 6, 6, 6, 6],
-            embed_dim=180,
-            num_heads=[6, 6, 6, 6, 6, 6],
-            expansion_factor=2,
-            resi_connection="1conv",
-            split_size=[8, 16],
-        )
-        .cuda()
-        .eval()
-    )
-
-    print(height, width)
-
-    x = torch.randn((1, 3, height, width)).cuda()
-    x = model(x)
-
-    print(x.shape)
