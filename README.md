@@ -22,3 +22,14 @@ To update this environment:
 ```bash
 conda env update --file environment.yml --prune
 ```
+
+## References
+
+```
+@inproceedings{chen2023dual,
+    title={Dual Aggregation Transformer for Image Super-Resolution},
+    author={Chen, Zheng and Zhang, Yulun and Gu, Jinjin and Kong, Linghe and Yang, Xiaokang and Yu, Fisher},
+    booktitle={ICCV},
+    year={2023}
+}
+```

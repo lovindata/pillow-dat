@@ -35,8 +35,9 @@ def task_upscale(queue: Queue, image: Image.Image, model: DAT) -> None:
 
 if __name__ == "__main__":
     #########################
+    # DAT_light_x<?>
     model = DAT(
-        upscale=2,
+        upscale=4,
         in_chans=3,
         img_size=64,
         img_range=1.0,
@@ -48,8 +49,53 @@ if __name__ == "__main__":
         split_size=[8, 32],
         upsampler="pixelshuffledirect",
     ).eval()
+    weights = torch.load("./experiments/pretrained_models/DAT_light_x4.pth")
 
-    weights = torch.load("./experiments/pretrained_models/DAT_light_x2.pth")
+    # DAT_S_x<?>
+    # model = DAT(
+    #     upscale=4,
+    #     in_chans=3,
+    #     img_size=64,
+    #     img_range=1.0,
+    #     depth=[6, 6, 6, 6, 6, 6],
+    #     embed_dim=180,
+    #     num_heads=[6, 6, 6, 6, 6, 6],
+    #     expansion_factor=2,
+    #     resi_connection="1conv",
+    #     split_size=[8, 16],
+    # ).eval()
+    # weights = torch.load("./experiments/pretrained_models/DAT_S_x4.pth")
+
+    # DAT_2_x<?>
+    # model = DAT(
+    #     upscale=4,
+    #     in_chans=3,
+    #     img_size=64,
+    #     img_range=1.0,
+    #     depth=[6, 6, 6, 6, 6, 6],
+    #     embed_dim=180,
+    #     num_heads=[6, 6, 6, 6, 6, 6],
+    #     expansion_factor=2,
+    #     resi_connection="1conv",
+    #     split_size=[8, 32],
+    # ).eval()
+    # weights = torch.load("./experiments/pretrained_models/DAT_2_x4.pth")
+
+    # DAT_x<?>
+    # model = DAT(
+    #     upscale=4,
+    #     in_chans=3,
+    #     img_size=64,
+    #     img_range=1.0,
+    #     depth=[6, 6, 6, 6, 6, 6],
+    #     embed_dim=180,
+    #     num_heads=[6, 6, 6, 6, 6, 6],
+    #     expansion_factor=4,
+    #     resi_connection="1conv",
+    #     split_size=[8, 32],
+    # ).eval()
+    # weights = torch.load("./experiments/pretrained_models/DAT_x4.pth")
+
     model.load_state_dict(weights["params"])
     print("SUCCESS load!")
 

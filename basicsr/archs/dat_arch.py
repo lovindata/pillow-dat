@@ -1,4 +1,5 @@
 import math
+from typing import List, Literal, Tuple
 
 import numpy as np
 import torch
@@ -6,12 +7,16 @@ import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
 from einops import rearrange
 from einops.layers.torch import Rearrange
+from torch import Tensor
 from torch.nn import functional as F
 
 
 def drop_path(
-    x, drop_prob: float = 0.0, training: bool = False, scale_by_keep: bool = True
-):
+    x: Tensor,
+    drop_prob: float = 0.0,
+    training: bool = False,
+    scale_by_keep: bool = True,
+) -> Tensor:
     """Drop paths (Stochastic Depth) per sample (when applied in main path of residual blocks).
 
     This is the same as the DropConnect impl I created for EfficientNet, etc networks, however,
@@ -33,7 +38,7 @@ def drop_path(
     return x * random_tensor
 
 
-def img2windows(img, H_sp, W_sp):
+def img2windows(img: Tensor, H_sp: int, W_sp: int) -> Tensor:
     """
     Input: Image (B, C, H, W)
     Output: Window Partition (B', N, C)
@@ -46,7 +51,7 @@ def img2windows(img, H_sp, W_sp):
     return img_perm
 
 
-def windows2img(img_splits_hw, H_sp, W_sp, H, W):
+def windows2img(img_splits_hw: Tensor, H_sp: int, W_sp: int, H: int, W: int) -> Tensor:
     """
     Input: Window Partition (B', N, C)
     Output: Image (B, H, W, C)
@@ -61,15 +66,15 @@ def windows2img(img_splits_hw, H_sp, W_sp, H, W):
 class DropPath(nn.Module):
     """Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks)."""
 
-    def __init__(self, drop_prob: float = 0.0, scale_by_keep: bool = True):
+    def __init__(self, drop_prob: float = 0.0, scale_by_keep: bool = True) -> None:
         super(DropPath, self).__init__()
         self.drop_prob = drop_prob
         self.scale_by_keep = scale_by_keep
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
         return drop_path(x, self.drop_prob, self.training, self.scale_by_keep)
 
-    def extra_repr(self):
+    def extra_repr(self) -> str:
         return f"drop_prob={round(self.drop_prob,3):0.3f}"
 
 
@@ -79,14 +84,14 @@ class SpatialGate(nn.Module):
         dim (int): Half of input channels.
     """
 
-    def __init__(self, dim):
+    def __init__(self, dim: int) -> None:
         super().__init__()
         self.norm = nn.LayerNorm(dim)
         self.conv = nn.Conv2d(
             dim, dim, kernel_size=3, stride=1, padding=1, groups=dim
         )  # DW Conv
 
-    def forward(self, x, H, W):
+    def forward(self, x: Tensor, H: int, W: int) -> Tensor:
         # Split
         x1, x2 = x.chunk(2, dim=-1)
         B, N, C = x.shape
@@ -112,12 +117,12 @@ class SGFN(nn.Module):
 
     def __init__(
         self,
-        in_features,
-        hidden_features=None,
-        out_features=None,
-        act_layer=nn.GELU,
-        drop=0.0,
-    ):
+        in_features: int,
+        hidden_features: int | None = None,
+        out_features: int | None = None,
+        act_layer: type[nn.Module] = nn.GELU,
+        drop: float = 0.0,
+    ) -> None:
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
@@ -127,7 +132,7 @@ class SGFN(nn.Module):
         self.fc2 = nn.Linear(hidden_features // 2, out_features)
         self.drop = nn.Dropout(drop)
 
-    def forward(self, x, H, W):
+    def forward(self, x: Tensor, H: int, W: int) -> Tensor:
         """
         Input: x: (B, H*W, C), H, W
         Output: x: (B, H*W, C)
@@ -153,7 +158,7 @@ class DynamicPosBias(nn.Module):
         residual (bool):  If True, use residual strage to connect conv.
     """
 
-    def __init__(self, dim, num_heads, residual):
+    def __init__(self, dim: int, num_heads: int, residual: bool) -> None:
         super().__init__()
         self.residual = residual
         self.num_heads = num_heads
@@ -175,7 +180,7 @@ class DynamicPosBias(nn.Module):
             nn.Linear(self.pos_dim, self.num_heads),
         )
 
-    def forward(self, biases):
+    def forward(self, biases: Tensor) -> Tensor:
         if self.residual:
             pos = self.pos_proj(biases)  # 2Gh-1 * 2Gw-1, heads
             pos = pos + self.pos1(pos)
@@ -203,16 +208,15 @@ class Spatial_Attention(nn.Module):
 
     def __init__(
         self,
-        dim,
-        idx,
-        split_size=[8, 8],
-        dim_out=None,
-        num_heads=6,
-        attn_drop=0.0,
-        proj_drop=0.0,
-        qk_scale=None,
-        position_bias=True,
-    ):
+        dim: int,
+        idx: int,
+        split_size: List[int] = [8, 8],
+        dim_out: int | None = None,
+        num_heads: int = 6,
+        attn_drop: float = 0.0,
+        qk_scale: float | None = None,
+        position_bias: bool = True,
+    ) -> None:
         super().__init__()
         self.dim = dim
         self.dim_out = dim_out or dim
@@ -239,14 +243,16 @@ class Spatial_Attention(nn.Module):
             # generate mother-set
             position_bias_h = torch.arange(1 - self.H_sp, self.H_sp)
             position_bias_w = torch.arange(1 - self.W_sp, self.W_sp)
-            biases = torch.stack(torch.meshgrid([position_bias_h, position_bias_w]))
+            biases = torch.stack(
+                torch.meshgrid([position_bias_h, position_bias_w], indexing="ij")
+            )
             biases = biases.flatten(1).transpose(0, 1).contiguous().float()
             self.register_buffer("rpe_biases", biases)
 
             # get pair-wise relative position index for each token inside the window
             coords_h = torch.arange(self.H_sp)
             coords_w = torch.arange(self.W_sp)
-            coords = torch.stack(torch.meshgrid([coords_h, coords_w]))
+            coords = torch.stack(torch.meshgrid([coords_h, coords_w], indexing="ij"))
             coords_flatten = torch.flatten(coords, 1)
             relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]
             relative_coords = relative_coords.permute(1, 2, 0).contiguous()
@@ -258,7 +264,7 @@ class Spatial_Attention(nn.Module):
 
         self.attn_drop = nn.Dropout(attn_drop)
 
-    def im2win(self, x, H, W):
+    def im2win(self, x: Tensor, H: int, W: int) -> Tensor:
         B, N, C = x.shape
         x = x.transpose(-2, -1).contiguous().view(B, C, H, W)
         x = img2windows(x, self.H_sp, self.W_sp)
@@ -269,7 +275,9 @@ class Spatial_Attention(nn.Module):
         )
         return x
 
-    def forward(self, qkv, H, W, mask=None):
+    def forward(
+        self, qkv: Tensor, H: int, W: int, mask: Tensor | None = None
+    ) -> Tensor:
         """
         Input: qkv: (B, 3*L, C), H, W, mask: (B, N, N), N is the window size
         Output: x (B, H, W, C)
@@ -341,18 +349,18 @@ class Adaptive_Spatial_Attention(nn.Module):
 
     def __init__(
         self,
-        dim,
-        num_heads,
-        reso=64,
-        split_size=[8, 8],
-        shift_size=[1, 2],
-        qkv_bias=False,
-        qk_scale=None,
-        drop=0.0,
-        attn_drop=0.0,
-        rg_idx=0,
-        b_idx=0,
-    ):
+        dim: int,
+        num_heads: int,
+        reso: int = 64,
+        split_size: List[int] = [8, 8],
+        shift_size: List[int] = [1, 2],
+        qkv_bias: bool = False,
+        qk_scale: float | None = None,
+        drop: float = 0.0,
+        attn_drop: float = 0.0,
+        rg_idx: int = 0,
+        b_idx: int = 0,
+    ) -> None:
         super().__init__()
         self.dim = dim
         self.num_heads = num_heads
@@ -385,7 +393,6 @@ class Adaptive_Spatial_Attention(nn.Module):
                     dim_out=dim // 2,
                     qk_scale=qk_scale,
                     attn_drop=attn_drop,
-                    proj_drop=drop,
                     position_bias=True,
                 )
                 for i in range(self.branch_num)
@@ -424,7 +431,7 @@ class Adaptive_Spatial_Attention(nn.Module):
             nn.Conv2d(dim // 16, 1, kernel_size=1),
         )
 
-    def calculate_mask(self, H, W):
+    def calculate_mask(self, H: int, W: int) -> Tuple[Tensor, Tensor]:
         # The implementation builds on Swin Transformer code https://github.com/microsoft/Swin-Transformer/blob/main/models/swin_transformer.py
         # calculate attention mask for shift window
         img_mask_0 = torch.zeros((1, H, W, 1))  # 1 H W 1 idx=0
@@ -503,7 +510,7 @@ class Adaptive_Spatial_Attention(nn.Module):
 
         return attn_mask_0, attn_mask_1
 
-    def forward(self, x, H, W):
+    def forward(self, x: Tensor, H: int, W: int) -> Tensor:
         """
         Input: x: (B, H*W, C), H, W
         Output: x: (B, H*W, C)
@@ -615,20 +622,18 @@ class Adaptive_Channel_Attention(nn.Module):
         dim (int): Number of input channels.
         num_heads (int): Number of attention heads. Default: 6
         qkv_bias (bool): If True, add a learnable bias to query, key, value. Default: True
-        qk_scale (float | None): Override default qk scale of head_dim ** -0.5 if set.
         attn_drop (float): Attention dropout rate. Default: 0.0
         drop_path (float): Stochastic depth rate. Default: 0.0
     """
 
     def __init__(
         self,
-        dim,
-        num_heads=8,
-        qkv_bias=False,
-        qk_scale=None,
-        attn_drop=0.0,
-        proj_drop=0.0,
-    ):
+        dim: int,
+        num_heads: int = 8,
+        qkv_bias: bool = False,
+        attn_drop: float = 0.0,
+        proj_drop: float = 0.0,
+    ) -> None:
         super().__init__()
         self.num_heads = num_heads
         self.temperature = nn.Parameter(torch.ones(num_heads, 1, 1))
@@ -657,7 +662,7 @@ class Adaptive_Channel_Attention(nn.Module):
             nn.Conv2d(dim // 16, 1, kernel_size=1),
         )
 
-    def forward(self, x, H, W):
+    def forward(self, x: Tensor, H: int, W: int) -> Tensor:
         """
         Input: x: (B, H*W, C), H, W
         Output: x: (B, H*W, C)
@@ -715,22 +720,22 @@ class Adaptive_Channel_Attention(nn.Module):
 class DATB(nn.Module):
     def __init__(
         self,
-        dim,
-        num_heads,
-        reso=64,
-        split_size=[2, 4],
-        shift_size=[1, 2],
-        expansion_factor=4.0,
-        qkv_bias=False,
-        qk_scale=None,
-        drop=0.0,
-        attn_drop=0.0,
-        drop_path=0.0,
-        act_layer=nn.GELU,
-        norm_layer=nn.LayerNorm,
-        rg_idx=0,
-        b_idx=0,
-    ):
+        dim: int,
+        num_heads: int,
+        reso: int = 64,
+        split_size: List[int] = [2, 4],
+        shift_size: List[int] = [1, 2],
+        expansion_factor: float = 4.0,
+        qkv_bias: bool = False,
+        qk_scale: float | None = None,
+        drop: float = 0.0,
+        attn_drop: float = 0.0,
+        drop_path: float | None = 0.0,
+        act_layer: type[nn.Module] = nn.GELU,
+        norm_layer: type[nn.Module] = nn.LayerNorm,
+        rg_idx: int = 0,
+        b_idx: int = 0,
+    ) -> None:
         super().__init__()
 
         self.norm1 = norm_layer(dim)
@@ -756,11 +761,12 @@ class DATB(nn.Module):
                 dim,
                 num_heads=num_heads,
                 qkv_bias=qkv_bias,
-                qk_scale=qk_scale,
                 attn_drop=attn_drop,
                 proj_drop=drop,
             )
-        self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
+        self.drop_path = (
+            DropPath(drop_path) if drop_path and drop_path > 0.0 else nn.Identity()
+        )
 
         ffn_hidden_dim = int(dim * expansion_factor)
         self.ffn = SGFN(
@@ -771,7 +777,7 @@ class DATB(nn.Module):
         )
         self.norm2 = norm_layer(dim)
 
-    def forward(self, x, x_size):
+    def forward(self, x: Tensor, x_size: List[int]) -> Tensor:
         """
         Input: x: (B, H*W, C), x_size: (H, W)
         Output: x: (B, H*W, C)
@@ -805,23 +811,23 @@ class ResidualGroup(nn.Module):
 
     def __init__(
         self,
-        dim,
-        reso,
-        num_heads,
-        split_size=[2, 4],
-        expansion_factor=4.0,
-        qkv_bias=False,
-        qk_scale=None,
-        drop=0.0,
-        attn_drop=0.0,
-        drop_paths=None,
-        act_layer=nn.GELU,
-        norm_layer=nn.LayerNorm,
-        depth=2,
-        use_chk=False,
-        resi_connection="1conv",
-        rg_idx=0,
-    ):
+        dim: int,
+        reso: int,
+        num_heads: int,
+        split_size: List[int] = [2, 4],
+        expansion_factor: float = 4.0,
+        qkv_bias: bool = False,
+        qk_scale: float | None = None,
+        drop: float = 0.0,
+        attn_drop: float = 0.0,
+        drop_paths: List[float] | None = None,
+        act_layer: type[nn.Module] = nn.GELU,
+        norm_layer: type[nn.Module] = nn.LayerNorm,
+        depth: int = 2,
+        use_chk: bool = False,
+        resi_connection: Literal["1conv", "3conv"] = "1conv",
+        rg_idx: int = 0,
+    ) -> None:
         super().__init__()
         self.use_chk = use_chk
         self.reso = reso
@@ -839,7 +845,7 @@ class ResidualGroup(nn.Module):
                     qk_scale=qk_scale,
                     drop=drop,
                     attn_drop=attn_drop,
-                    drop_path=drop_paths[i],
+                    drop_path=drop_paths[i] if drop_paths else None,
                     act_layer=act_layer,
                     norm_layer=norm_layer,
                     rg_idx=rg_idx,
@@ -860,7 +866,7 @@ class ResidualGroup(nn.Module):
                 nn.Conv2d(dim // 4, dim, 3, 1, 1),
             )
 
-    def forward(self, x, x_size):
+    def forward(self, x: Tensor, x_size: List[int]) -> Tensor:
         """
         Input: x: (B, H*W, C), x_size: (H, W)
         Output: x: (B, H*W, C)
@@ -869,7 +875,7 @@ class ResidualGroup(nn.Module):
         res = x
         for blk in self.blocks:
             if self.use_chk:
-                x = checkpoint.checkpoint(blk, x, x_size)
+                x = checkpoint.checkpoint(blk, x, x_size)  # type: ignore
             else:
                 x = blk(x, x_size)
         x = rearrange(x, "b (h w) c -> b c h w", h=H, w=W)
@@ -887,7 +893,7 @@ class Upsample(nn.Sequential):
         num_feat (int): Channel number of intermediate features.
     """
 
-    def __init__(self, scale, num_feat):
+    def __init__(self, scale: int, num_feat: int) -> None:
         m = []
         if (scale & (scale - 1)) == 0:  # scale = 2^n
             for _ in range(int(math.log(scale, 2))):
@@ -913,7 +919,13 @@ class UpsampleOneStep(nn.Sequential):
 
     """
 
-    def __init__(self, scale, num_feat, num_out_ch, input_resolution=None):
+    def __init__(
+        self,
+        scale: int,
+        num_feat: int,
+        num_out_ch: int,
+        input_resolution: Tuple[int, int],
+    ) -> None:
         self.num_feat = num_feat
         self.input_resolution = input_resolution
         m = []
@@ -921,7 +933,7 @@ class UpsampleOneStep(nn.Sequential):
         m.append(nn.PixelShuffle(scale))
         super(UpsampleOneStep, self).__init__(*m)
 
-    def flops(self):
+    def flops(self) -> int:
         h, w = self.input_resolution
         flops = h * w * self.num_feat * 3 * 9
         return flops
@@ -952,27 +964,26 @@ class DAT(nn.Module):
 
     def __init__(
         self,
-        img_size=64,
-        in_chans=3,
-        embed_dim=180,
-        split_size=[2, 4],
-        depth=[2, 2, 2, 2],
-        num_heads=[2, 2, 2, 2],
-        expansion_factor=4.0,
-        qkv_bias=True,
-        qk_scale=None,
-        drop_rate=0.0,
-        attn_drop_rate=0.0,
-        drop_path_rate=0.1,
-        act_layer=nn.GELU,
-        norm_layer=nn.LayerNorm,
-        use_chk=False,
-        upscale=2,
-        img_range=1.0,
-        resi_connection="1conv",
-        upsampler="pixelshuffle",
-        **kwargs,
-    ):
+        img_size: int = 64,
+        in_chans: int = 3,
+        embed_dim: int = 180,
+        split_size: List[int] = [2, 4],
+        depth: List[int] = [2, 2, 2, 2],
+        num_heads: List[int] = [2, 2, 2, 2],
+        expansion_factor: float = 4.0,
+        qkv_bias: bool = True,
+        qk_scale: float | None = None,
+        drop_rate: float = 0.0,
+        attn_drop_rate: float = 0.0,
+        drop_path_rate: float = 0.1,
+        act_layer: type[nn.Module] = nn.GELU,
+        norm_layer: type[nn.Module] = nn.LayerNorm,
+        use_chk: bool = False,
+        upscale: int = 2,
+        img_range: float = 1.0,
+        resi_connection: Literal["1conv", "3conv"] = "1conv",
+        upsampler: Literal["pixelshuffle", "pixelshuffledirect"] = "pixelshuffle",
+    ) -> None:
         super().__init__()
 
         num_in_ch = in_chans
@@ -1059,7 +1070,7 @@ class DAT(nn.Module):
 
         self.apply(self._init_weights)
 
-    def _init_weights(self, m):
+    def _init_weights(self, m: nn.Module) -> None:
         if isinstance(m, nn.Linear):
             nn.init.trunc_normal_(m.weight, std=0.02)
             if isinstance(m, nn.Linear) and m.bias is not None:
@@ -1070,7 +1081,7 @@ class DAT(nn.Module):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
 
-    def forward_features(self, x):
+    def forward_features(self, x: Tensor) -> Tensor:
         _, _, H, W = x.shape
         x_size = [H, W]
         x = self.before_RG(x)
@@ -1081,7 +1092,7 @@ class DAT(nn.Module):
 
         return x
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
         """
         Input: x: (B, C, H, W)
         """
