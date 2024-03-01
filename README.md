@@ -23,6 +23,12 @@ To update this environment:
 conda env update --file environment.yml --prune
 ```
 
+To run unit tests:
+
+```bash
+python -m pytest
+```
+
 ## References
 
 ```
