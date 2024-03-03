@@ -37,7 +37,7 @@ if __name__ == "__main__":
     #########################
     # DAT_light_x<?>
     model = DAT(
-        upscale=4,
+        upscale=2,
         in_chans=3,
         img_size=64,
         img_range=1.0,
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         split_size=[8, 32],
         upsampler="pixelshuffledirect",
     ).eval()
-    weights = torch.load("./experiments/pretrained_models/DAT_light_x4.pth")
+    weights = torch.load("./experiments/pretrained_models/DAT_light_x2.pth")
 
     # DAT_S_x<?>
     # model = DAT(

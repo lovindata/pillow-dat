@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Literal, Tuple
 
 import numpy as np
 import PIL.Image as PIL
 import torch
 import torch.nn as nn
-from PIL.Image import Image
+from PIL.Image import BICUBIC, Image
 from torch import Tensor
 
 
@@ -18,6 +18,10 @@ class DATModel(ABC):
         )  # Raises error in case of incorrect weights
 
     def upscale(self, image: Image) -> Image:
+        def extract_rgb_and_alpha(image: Image) -> Tuple[Image, Image]:
+            rgba_image = image.convert("RGBA")
+            return rgba_image.convert("RGB"), rgba_image.split()[-1]
+
         def img2tensor(image: Image) -> Tensor:
             input = (
                 torch.tensor(np.array(image), dtype=torch.float32)
@@ -32,10 +36,15 @@ class DATModel(ABC):
             output = PIL.fromarray(tensor.byte().numpy())
             return output
 
-        tensor = img2tensor(image)
+        source_mode = image.mode
+        rgb, alpha = extract_rgb_and_alpha(image)
+        tensor = img2tensor(rgb)
         with torch.no_grad():
             tensor = self._model(tensor)
-        image = tensor2img(tensor)
+        rgb = tensor2img(tensor)
+        alpha = alpha.resize(rgb.size, BICUBIC)
+        rgb.putalpha(alpha)
+        image = rgb.convert(source_mode)
         return image
 
     @property
