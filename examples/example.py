@@ -1,6 +1,6 @@
 from PIL.Image import open
 
-from src.PIL_DAT.Image import upscale
+from PIL_DAT.Image import upscale
 
 
 def main() -> None:
@@ -10,4 +10,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+
     main()
