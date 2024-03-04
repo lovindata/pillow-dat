@@ -54,7 +54,7 @@ Please install VSCode extensions:
 - Python
 - Pylance
 
-To install dependencies on a given `dat-light-packaged` Python environnement:
+To install dependencies on a given `pillow-dat` Python environnement:
 
 ```bash
 conda env create --file environment.yml
