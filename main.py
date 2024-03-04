@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-from basicsr.archs.dat_arch import DAT
+from src.PIL_DAT._dat_arch import DAT
 
 
 def img2tensor_fast(img):
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         split_size=[8, 32],
         upsampler="pixelshuffledirect",
     ).eval()
-    weights = torch.load("./experiments/pretrained_models/DAT_light_x2.pth")
+    weights = torch.load("./DAT_light_x2.pth")
 
     # DAT_S_x<?>
     # model = DAT(
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     #     resi_connection="1conv",
     #     split_size=[8, 16],
     # ).eval()
-    # weights = torch.load("./experiments/pretrained_models/DAT_S_x4.pth")
+    # weights = torch.load("./DAT_S_x4.pth")
 
     # DAT_2_x<?>
     # model = DAT(
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     #     resi_connection="1conv",
     #     split_size=[8, 32],
     # ).eval()
-    # weights = torch.load("./experiments/pretrained_models/DAT_2_x4.pth")
+    # weights = torch.load("./DAT_2_x4.pth")
 
     # DAT_x<?>
     # model = DAT(
@@ -94,14 +94,14 @@ if __name__ == "__main__":
     #     resi_connection="1conv",
     #     split_size=[8, 32],
     # ).eval()
-    # weights = torch.load("./experiments/pretrained_models/DAT_x4.pth")
+    # weights = torch.load("./DAT_x4.pth")
 
     model.load_state_dict(weights["params"])
     print("SUCCESS load!")
 
     #########################
     queue = Queue()
-    image = Image.open("./datasets/single/lumine2.png")
+    image = Image.open("C:/Users/33650/Downloads/img/lumine2.png")
     Process(target=task_upscale, args=(queue, image, model)).start()
     image = queue.get()
     image.show()

@@ -2,7 +2,7 @@ from typing import Literal
 
 import torch.nn as nn
 
-from basicsr.archs.dat_arch import DAT
+from src.PIL_DAT._dat_arch import DAT
 from src.PIL_DAT.dat_model import DATModel
 
 
