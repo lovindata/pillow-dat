@@ -4,8 +4,9 @@ from unittest.mock import Mock, patch
 import pytest
 import torch.nn as nn
 from PIL import Image
-from pillow_dat.PIL_DAT.dat_light import DATLight
-from pillow_dat.PIL_DAT.dat_model import DATModel
+
+from PIL_DAT.dat_light import DATLight
+from PIL_DAT.dat_model import DATModel
 
 
 class TestDATModel:

@@ -1,11 +1,12 @@
 from typing import Literal
 
 import torch.nn as nn
-from pillow_dat.PIL_DAT._dat_arch import DAT
-from pillow_dat.PIL_DAT.dat_model import DATModel
+
+from PIL_DAT._dat_arch import DAT
+from PIL_DAT.dat_model import DATModel
 
 
-class DATS(DATModel):
+class DAT2(DATModel):
     def __init__(self, pth_path: str, scale: Literal[2, 3, 4]) -> None:
         self._cached_model = DAT(
             upscale=scale,
@@ -17,7 +18,7 @@ class DATS(DATModel):
             num_heads=[6, 6, 6, 6, 6, 6],
             expansion_factor=2,
             resi_connection="1conv",
-            split_size=[8, 16],
+            split_size=[8, 32],
         ).eval()
         super().__init__(pth_path, scale)
 

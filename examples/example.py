@@ -1,6 +1,6 @@
 from PIL.Image import open
 
-from pillow_dat.PIL_DAT.Image import upscale
+from PIL_DAT.Image import upscale
 
 
 def main() -> None:
