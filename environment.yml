@@ -1,14 +1,7 @@
 name: pillow-dat
 channels:
   - defaults
-  - conda-forge
-  # - pytorch
 dependencies:
-  - python
   - pip
   - pip:
       - poetry
-  # - pytorch-cpu
-  # - einops
-  # - pillow
-  # - pytest

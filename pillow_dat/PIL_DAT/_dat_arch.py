@@ -1,4 +1,5 @@
 import math
+import warnings
 from typing import List, Literal, Tuple
 
 import numpy as np
@@ -9,6 +10,14 @@ from einops import rearrange
 from einops.layers.torch import Rearrange
 from torch import Tensor
 from torch.nn import functional as F
+
+
+def einops_rearrange(
+    tensor: Tensor | List[Tensor], pattern: str, **axes_lengths
+) -> Tensor:
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return rearrange(tensor, pattern, **axes_lengths)
 
 
 def drop_path(
@@ -878,9 +887,9 @@ class ResidualGroup(nn.Module):
                 x = checkpoint.checkpoint(blk, x, x_size)  # type: ignore
             else:
                 x = blk(x, x_size)
-        x = rearrange(x, "b (h w) c -> b c h w", h=H, w=W)
+        x = einops_rearrange(x, "b (h w) c -> b c h w", h=H, w=W)
         x = self.conv(x)
-        x = rearrange(x, "b c h w -> b (h w) c")
+        x = einops_rearrange(x, "b c h w -> b (h w) c")
         x = res + x
 
         return x
@@ -1088,7 +1097,7 @@ class DAT(nn.Module):
         for layer in self.layers:
             x = layer(x, x_size)
         x = self.norm(x)
-        x = rearrange(x, "b (h w) c -> b c h w", h=H, w=W)
+        x = einops_rearrange(x, "b (h w) c -> b c h w", h=H, w=W)
 
         return x
 

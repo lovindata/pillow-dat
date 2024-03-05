@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pillow-dat"
-version = "0.1.1"
+version = "0.1.2"
 description = "PIL × DAT - Pillow extension for AI-based image upscaling."
 authors = ["iLoveDataJjia <ilovedata.jjia@gmail.com>"]
 license = "Apache-2.0"
@@ -11,16 +11,13 @@ packages = [{include = "pillow_dat"}]
 python = "^3.11"
 einops = "^0.7.0"
 pillow = "^10.2.0"
+torch = "^2.2.1"
+numpy = "^1.26.4"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
 
-
-[[tool.poetry.source]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]

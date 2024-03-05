@@ -22,12 +22,6 @@ For PyPI:
 pip install pillow-dat
 ```
 
-For Conda:
-
-```bash
-conda install -c conda-forge pillow-dat
-```
-
 ## Get started
 
 - 1. Download `DAT_light_x2.pth` model weight from [Google Drive](https://drive.google.com/drive/folders/1ro8bAZxrIEm03eE-7Lc15q9cwE3CJ-oh?usp=sharing). We highly recommend utilizing `DAT_light_x*.pth` models due to their lightweight design and exceptional speed.

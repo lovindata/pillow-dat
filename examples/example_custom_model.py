@@ -1,6 +1,6 @@
 from PIL.Image import open
 
-from PIL_DAT.dat_s import DATS
+from pillow_dat.PIL_DAT.dat_s import DATS
 
 
 def main() -> None:
