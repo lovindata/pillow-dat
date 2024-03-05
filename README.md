@@ -53,22 +53,26 @@ Please install VSCode extensions:
 - Python
 - Pylance
 
-To install dependencies on a given `pillow-dat` Python environnement:
+To create or update the `pillow-dat` Python environment:
 
 ```bash
 conda env create --file environment.yml
 ```
 
-To update this environment:
-
 ```bash
 conda env update --file environment.yml --prune
+```
+
+To install dependencies:
+
+```bash
+poetry install
 ```
 
 To run unit tests:
 
 ```bash
-python -m pytest
+pytest
 ```
 
 ## Acknowledgement
