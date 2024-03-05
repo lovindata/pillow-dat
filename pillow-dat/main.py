@@ -3,8 +3,7 @@ from multiprocessing import Process, Queue
 import numpy as np
 import torch
 from PIL import Image
-
-from src.PIL_DAT._dat_arch import DAT
+from pillow_dat.PIL_DAT._dat_arch import DAT
 
 
 def img2tensor_fast(img):
@@ -49,7 +48,7 @@ if __name__ == "__main__":
         split_size=[8, 32],
         upsampler="pixelshuffledirect",
     ).eval()
-    weights = torch.load("./DAT_light_x2.pth")
+    weights = torch.load("./dist/DAT_light_x2.pth")
 
     # DAT_S_x<?>
     # model = DAT(

@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://ilovedatajjia.github.io/blog/" target="_blank">
-      <img alt="iLoveData" src=".github/logo.png" width="500" style="max-width: 100%;">
+      <img alt="iLoveData" src="https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/logo.png?raw=true" width="500" style="max-width: 100%;">
   </a>
 </p>
 
@@ -9,7 +9,6 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/iLoveDataJjia/pillow-dat/actions"><img src="https://img.shields.io/github/actions/workflow/status/ilovedatajjia/pillow-dat/ci.yml?branch=main" alt="Build Status"></a>
     <a href="https://github.com/iLoveDataJjia/pillow-dat/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ilovedatajjia/pillow-dat" alt="License"></a>
 </p>
 
