@@ -24,17 +24,22 @@ pip install pillow-dat
 
 ## Get started
 
-- 1. Download `DAT_light_x2.pth` model weight from [Google Drive](https://drive.google.com/drive/folders/1ro8bAZxrIEm03eE-7Lc15q9cwE3CJ-oh?usp=sharing). We highly recommend utilizing `DAT_light_x*.pth` models due to their lightweight design and exceptional speed.
-- 2. 🎉 Then you are all set to upscale your images:
-
 ```python
 from PIL.Image import open
 from PIL_DAT.Image import upscale
 
-image = open("./lumine.png")
-image = upscale(lumine_image, "./DAT_light_x2.pth", 2)
-image.show()
+lumine_image = open("./lumine.png")
+lumine_image = upscale(lumine_image, 2)
+lumine_image.show()
 ```
+
+_Remark_: We strongly advocate for the utilization of `DAT light` models owing to their streamlined design and outstanding speed performance. However, should you opt for alternative models, please note that `*.pth` model weights can be accessed via [Google Drive](https://drive.google.com/drive/folders/1ro8bAZxrIEm03eE-7Lc15q9cwE3CJ-oh?usp=sharing).
+
+## Example
+
+|            Input (lumine.png)             |                Output                |                Bicubic                 |
+| :---------------------------------------: | :----------------------------------: | :------------------------------------: |
+| ![Input (lumine.png)](.github/lumine.png) | ![Output](.github/lumine_output.png) | ![Bicubic](.github/lumine_bicubic.png) |
 
 ## Contribution
 

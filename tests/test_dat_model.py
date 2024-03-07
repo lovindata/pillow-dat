@@ -1,25 +1,44 @@
-from typing import Literal
+from typing import Callable
 from unittest.mock import Mock, patch
 
 import pytest
 import torch.nn as nn
 from PIL import Image
 
+from PIL_DAT.dat_2 import DAT2
+from PIL_DAT.dat_base import DATBase
 from PIL_DAT.dat_light import DATLight
 from PIL_DAT.dat_model import DATModel
+from PIL_DAT.dat_s import DATS
 
 
 class TestDATModel:
-    @pytest.mark.parametrize("scale", [(2), (3), (4)])
-    def test_upscale_scale(self, scale: Literal[2, 3, 4]) -> None:
+    @pytest.mark.parametrize(
+        "build_model",
+        [
+            (lambda: DATLight(2)),
+            (lambda: DATLight(3)),
+            (lambda: DATLight(4)),
+            (lambda: DATS(Mock(), 2)),
+            (lambda: DATS(Mock(), 3)),
+            (lambda: DATS(Mock(), 4)),
+            (lambda: DAT2(Mock(), 2)),
+            (lambda: DAT2(Mock(), 3)),
+            (lambda: DAT2(Mock(), 4)),
+            (lambda: DATBase(Mock(), 2)),
+            (lambda: DATBase(Mock(), 3)),
+            (lambda: DATBase(Mock(), 4)),
+        ],
+    )
+    def test_upscale_all_models(self, build_model: Callable[[], DATModel]) -> None:
         input = Image.new("RGB", (4, 4))
         with patch("torch.load", return_value={"params": Mock()}), patch.object(
             nn.Module, "load_state_dict", return_value=None
         ):
-            model: DATModel = DATLight(Mock(), scale)
+            model = build_model()
             output = model.upscale(input)
-            assert output.size[0] == (input.size[0] * scale)
-            assert output.size[1] == (input.size[1] * scale)
+            assert output.size[0] == (input.size[0] * model.scale)
+            assert output.size[1] == (input.size[1] * model.scale)
 
     @pytest.mark.parametrize(
         "image_mode",
@@ -41,12 +60,12 @@ class TestDATModel:
             "RGBa",  # true color with premultiplied alpha
         ],
     )
-    def test_upscale_image_mode_supported(self, image_mode: str) -> None:
+    def test_upscale_supported_image_mode(self, image_mode: str) -> None:
         input = Image.new(image_mode, (4, 4))
         with patch("torch.load", return_value={"params": Mock()}), patch.object(
             nn.Module, "load_state_dict", return_value=None
         ):
-            model: DATModel = DATLight(Mock(), 2)
+            model = DATLight(2)
             output = model.upscale(input)
             assert output.mode == image_mode
 
@@ -87,14 +106,14 @@ class TestDATModel:
             ),  # 24-bit reversed true colour
         ],
     )
-    def test_upscale_image_mode_unsupported(
+    def test_upscale_unsupported_image_mode(
         self, image_mode: str, expected: Exception
     ) -> None:
         input = Image.new(image_mode, (4, 4))
         with patch("torch.load", return_value={"params": Mock()}), patch.object(
             nn.Module, "load_state_dict", return_value=None
         ):
-            model: DATModel = DATLight(Mock(), 2)
+            model = DATLight(2)
             with pytest.raises(type(expected)) as output:
                 model.upscale(input)
             assert str(output.value) == str(expected)

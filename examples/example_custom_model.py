@@ -1,11 +1,13 @@
 from PIL.Image import open
 
-from PIL_DAT.dat_s import DATS
+from PIL_DAT.dat_base import DATBase
 
 
 def main() -> None:
-    lumine_image = open("./lumine.png")
-    model = DATS("./DAT_S_x4.pth", 4)  # Instantiate a reusable custom model instance
+    lumine_image = open(".github/lumine.png")
+    model = DATBase(
+        "./dist/DAT_x4.pth", 4
+    )  # Instantiate a reusable custom model instance
     lumine_image = model.upscale(lumine_image)
     lumine_image.show()
 

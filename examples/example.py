@@ -4,8 +4,8 @@ from PIL_DAT.Image import upscale
 
 
 def main() -> None:
-    lumine_image = open("./lumine.png")
-    lumine_image = upscale(lumine_image, "./DAT_light_x2.pth", 2)
+    lumine_image = open(".github/lumine.png")
+    lumine_image = upscale(lumine_image, 2)
     lumine_image.show()
 
 

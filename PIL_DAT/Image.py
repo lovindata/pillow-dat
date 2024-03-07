@@ -5,13 +5,12 @@ from PIL.Image import Image
 from PIL_DAT.dat_light import DATLight
 
 
-def upscale(image: Image, pth_path: str, scale: Literal[2, 3, 4]) -> Image:
+def upscale(image: Image, scale: Literal[2, 3, 4]) -> Image:
     """
-    Upscales the provided image using the specified PyTorch model stored at the given file path.
+    Upscales the provided image using the DATLight model.
 
     Args:
         image (Image): An instance of PIL Image representing the input image.
-        pth_path (str): The file path to the PyTorch model.
         scale (Literal[2, 3, 4]): The scale factor for upscaling.
 
     Returns:
@@ -27,6 +26,6 @@ def upscale(image: Image, pth_path: str, scale: Literal[2, 3, 4]) -> Image:
 
     Example:
         >>> input_image = Image.open("input_image.jpg")
-        >>> upscaled_image = upscale(input_image, "model.pth", 2)
+        >>> upscaled_image = upscale(input_image, 2)
     """
-    return DATLight(pth_path, scale).upscale(image)
+    return DATLight(scale).upscale(image)
