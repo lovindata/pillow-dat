@@ -26,9 +26,10 @@ pip install pillow-dat
 
 ```python
 from PIL.Image import open
+
 from PIL_DAT.Image import upscale
 
-lumine_image = open("./lumine.png")
+lumine_image = open(".github/lumine.png")
 lumine_image = upscale(lumine_image, 2)
 lumine_image.show()
 ```
@@ -37,9 +38,9 @@ _Remark_: We strongly advocate for the utilization of `DAT light` models owing t
 
 ## Example
 
-|            Input (lumine.png)             |                Output                |                Bicubic                 |
-| :---------------------------------------: | :----------------------------------: | :------------------------------------: |
-| ![Input (lumine.png)](.github/lumine.png) | ![Output](.github/lumine_output.png) | ![Bicubic](.github/lumine_bicubic.png) |
+|                                            Input (lumine.png)                                            |                                               Output                                                |                                                Bicubic                                                |
+| :------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
+| ![Input (lumine.png)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine.png?raw=true) | ![Output](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![Bicubic](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_bicubic.png?raw=true) |
 
 ## Contribution
 
