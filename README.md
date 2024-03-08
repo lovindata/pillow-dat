@@ -38,9 +38,39 @@ _Remark_: We strongly advocate for the utilization of `DAT light` models owing t
 
 ## Example
 
-|                                            Input (lumine.png)                                            |                                               Output                                                |                                                Bicubic                                                |
-| :------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
-| ![Input (lumine.png)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine.png?raw=true) | ![Output](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![Bicubic](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_bicubic.png?raw=true) |
+|                                            Input (lumine.png)                                            |                                               DAT light (x2)                                                |                                                Bicubic (x2)                                                |
+| :------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
+| ![Input (lumine.png)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine.png?raw=true) | ![DAT light (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![Bicubic (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_bicubic.png?raw=true) |
+
+## Benchmarks
+
+### Speed
+
+Performance benchmarks have been conducted on a computing system equipped with an `Intel(R) CORE(TM) i7-9750H CPU @ 2.60GHz processor`, accompanied by a `2 × 8 Go at 2667MHz RAM` configuration. Below are the recorded results:
+
+|  _In seconds_  | 320 × 320 | 640 × 640 | 960 × 960 | 1280 × 1280 |
+| :------------: | :-------: | :-------: | :-------: | :---------: |
+| DAT light (x2) |   13.7    |   54.9    |   127.2   |    299.3    |
+| DAT light (x3) |   13.2    |   56.5    |     -     |      -      |
+| DAT light (x4) |   12.8    |   56.6    |     -     |      -      |
+
+The results were compared against the renowned `OpenCV` library, utilizing its `EDSR` model known for delivering superior image quality.
+
+| _In seconds_ | 320 × 320 | 640 × 640 | 960 × 960 | 1280 × 1280 |
+| :----------: | :-------: | :-------: | :-------: | :---------: |
+|  EDSR (x2)   |   25.6    |   112.9   |   264.1   |    472.8    |
+|  EDSR (x3)   |   24.3    |   112.5   |     -     |      -      |
+|  EDSR (x4)   |   23.6    |   111.2   |     -     |      -      |
+
+_Remark_: All speed benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_speed_dat_light.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/benchmarks/benchmark_speed_dat_light.py) and [benchmark_speed_edsr.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/benchmarks/benchmark_speed_edsr.py).
+
+### Quality
+
+|                                               DAT light (x2)                                                |                                              EDSR (x2)                                               |
+| :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
+| ![DAT light (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![EDSR (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_edsr.png?raw=true) |
+
+_Remark_: All quality benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [example.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/examples/example.py) and [benchmark_quality_edsr.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/benchmarks/benchmark_quality_edsr.py).
 
 ## Contribution
 
