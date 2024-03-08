@@ -31,7 +31,6 @@ from PIL_DAT.Image import upscale
 
 lumine_image = open(".github/lumine.png")
 lumine_image = upscale(lumine_image, 2)
-lumine_image.show()
 ```
 
 _Remark_: We strongly advocate for the utilization of `DAT light` models owing to their streamlined design and outstanding speed performance. However, should you opt for alternative models, please note that `*.pth` model weights can be accessed via [Google Drive](https://drive.google.com/drive/folders/1ro8bAZxrIEm03eE-7Lc15q9cwE3CJ-oh?usp=sharing).
@@ -54,7 +53,7 @@ Performance benchmarks have been conducted on a computing system equipped with a
 | DAT light (x3) |   13.2    |   56.5    |     -     |      -      |
 | DAT light (x4) |   12.8    |   56.6    |     -     |      -      |
 
-The results were compared against the renowned `OpenCV` library, utilizing its `EDSR` model known for delivering superior image quality.
+The results were compared against the renowned [`OpenCV`](https://opencv.org/) library, utilizing its `EDSR` model known for delivering superior image quality.
 
 | _In seconds_ | 320 × 320 | 640 × 640 | 960 × 960 | 1280 × 1280 |
 | :----------: | :-------: | :-------: | :-------: | :---------: |
