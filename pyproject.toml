@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "pillow-dat"
-version = "0.1.7"
+version = "0.1.9"
 description = "PIL × DAT - Pillow extension for AI-based image upscaling."
-authors = ["iLoveDataJjia <ilovedata.jjia@gmail.com>"]
+authors = ["LovinData <ilovedata.jjia@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
 packages = [{include = "PIL_DAT"}]
