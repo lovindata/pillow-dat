@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://ilovedatajjia.github.io/blog/" target="_blank">
-      <img alt="iLoveData" src="https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/logo.png?raw=true" width="500" style="max-width: 100%;">
+  <a href="https://pypi.org/project/pillow-dat/" target="_blank">
+      <img alt="PIL × DAT" src="https://github.com/lovindata/pillow-dat/blob/main/.github/logo.png?raw=true" width="500" style="max-width: 100%;">
   </a>
 </p>
 
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/iLoveDataJjia/pillow-dat/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ilovedatajjia/pillow-dat" alt="License"></a>
+    <a href="https://github.com/lovindata/pillow-dat/blob/main/LICENSE"><img src="https://img.shields.io/github/license/lovindata/pillow-dat" alt="License"></a>
 </p>
 
 ---
@@ -37,9 +37,9 @@ _Remark_: We strongly advocate for the utilization of `DAT light` models owing t
 
 ## Example
 
-|                                            Input (lumine.png)                                            |                                               DAT light (x2)                                                |                                                Bicubic (x2)                                                |
-| :------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
-| ![Input (lumine.png)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine.png?raw=true) | ![DAT light (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![Bicubic (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_bicubic.png?raw=true) |
+|                                          Input (lumine.png)                                          |                                             DAT light (x2)                                              |                                              Bicubic (x2)                                              |
+| :--------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------: |
+| ![Input (lumine.png)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine.png?raw=true) | ![DAT light (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![Bicubic (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine_bicubic.png?raw=true) |
 
 ## Benchmarks
 
@@ -61,15 +61,15 @@ The results were compared against the renowned [`OpenCV`](https://opencv.org/) l
 |  EDSR (x3)   |   24.3    |   112.5   |     -     |      -      |
 |  EDSR (x4)   |   23.6    |   111.2   |     -     |      -      |
 
-_Remark_: All speed benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_speed_dat_light.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/benchmarks/benchmark_speed_dat_light.py) and [benchmark_speed_edsr.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/benchmarks/benchmark_speed_edsr.py).
+_Remark_: All speed benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_speed_dat_light.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_speed_dat_light.py) and [benchmark_speed_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_speed_edsr.py).
 
 ### Quality
 
-|                                               DAT light (x2)                                                |                                              EDSR (x2)                                               |
-| :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
-| ![DAT light (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![EDSR (x2)](https://github.com/iLoveDataJjia/pillow-dat/blob/main/.github/lumine_edsr.png?raw=true) |
+|                                             DAT light (x2)                                              |                                            EDSR (x2)                                             |
+| :-----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
+| ![DAT light (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![EDSR (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine_edsr.png?raw=true) |
 
-_Remark_: All quality benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [example.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/examples/example.py) and [benchmark_quality_edsr.py](https://github.com/iLoveDataJjia/pillow-dat/blob/main/benchmarks/benchmark_quality_edsr.py).
+_Remark_: All quality benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [example.py](https://github.com/lovindata/pillow-dat/blob/main/examples/example.py) and [benchmark_quality_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_quality_edsr.py).
 
 ## Contribution
 
