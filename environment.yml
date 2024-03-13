@@ -1,7 +1,0 @@
-name: pillow-dat
-channels:
-  - defaults
-dependencies:
-  - pip
-  - pip:
-      - poetry

@@ -22,6 +22,12 @@ For PyPI:
 pip install pillow-dat
 ```
 
+For Poetry:
+
+```bash
+poetry add pillow-dat
+```
+
 ## Get started
 
 ```python
@@ -73,26 +79,25 @@ _Remark_: All quality benchmark results presented here are reproducible. For det
 
 ## Contribution
 
-Please install [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html).
+Please install [Python](https://www.python.org/downloads/).
 
-Please install VSCode extensions:
+Please install [Poetry](https://python-poetry.org/docs/#installation) via [pipx](https://pipx.pypa.io/stable/installation/).
+
+Please install [VSCode](https://code.visualstudio.com/) and its extensions:
 
 - Black Formatter
 - isort
 - Python
 - Pylance
+- Even Better TOML
 
-To create or update the `pillow-dat` Python environment:
-
-```bash
-conda env create --file environment.yml
-```
+To have your Python environment inside your project (optional):
 
 ```bash
-conda env update --file environment.yml --prune
+poetry config virtualenvs.in-project true
 ```
 
-To install dependencies:
+To create your Python environment and install dependencies:
 
 ```bash
 poetry install
@@ -102,6 +107,12 @@ To run unit tests:
 
 ```bash
 pytest
+```
+
+To publish package:
+
+```bash
+poetry publish --build -u __token__ -p <pypi_token>
 ```
 
 ## Acknowledgement
