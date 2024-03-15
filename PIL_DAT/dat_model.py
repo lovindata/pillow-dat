@@ -5,6 +5,7 @@ import numpy as np
 import PIL.Image as PIL
 import torch
 import torch.nn as nn
+from PIL import ImageFilter
 from PIL.Image import BICUBIC, Image
 from torch import Tensor
 
@@ -31,12 +32,16 @@ class DATModel(ABC):
             torch.load(pth_path)["params"]
         )  # Raises error in case of incorrect weights
 
-    def upscale(self, image: Image) -> Image:
+    def upscale(self, image: Image, post_processing: bool = True) -> Image:
         """
         Upscales the given input image using the initialized PyTorch model.
 
         Args:
             image (Image): An instance of PIL Image representing the input image.
+            post_processing (bool, optional): Whether to apply post-processing to the upscaled image.
+                Defaults to True. If set to True, performs median filtering with a kernel size of 3
+                to remove small artifacts in the upscaled image. Set to False for artworks to retain
+                finer details.
 
         Returns:
             Image: An instance of PIL Image representing the upscaled image.
@@ -84,7 +89,8 @@ class DATModel(ABC):
         rgb = tensor2img(tensor)
         alpha = alpha.resize(rgb.size, BICUBIC)
         rgb.putalpha(alpha)
-        image = rgb.convert(source_mode)
+        image = rgb.filter(ImageFilter.MedianFilter()) if post_processing else rgb
+        image = image.convert(source_mode)
         return image
 
     @property
