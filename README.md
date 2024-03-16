@@ -83,7 +83,7 @@ _Remark_: All benchmark results presented here are reproducible. For detailed im
 | :------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------: |
 | ![Input](https://github.com/lovindata/pillow-dat/blob/main/.github/apple.png?raw=true) | ![DAT light (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/apple_output.png?raw=true) | ![EDSR (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/apple_edsr.png?raw=true) |
 
-_Remark_: All benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_alpha_channel_awareness_dat_light.py](https://github.com/lovindata/pillow-dat/blob/main/examples/benchmark_alpha_channel_awareness_dat_light.py) and [benchmark_alpha_channel_awareness_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_alpha_channel_awareness_edsr.py).
+_Remark_: All benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_alpha_channel_awareness_dat_light.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_alpha_channel_awareness_dat_light.py) and [benchmark_alpha_channel_awareness_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_alpha_channel_awareness_edsr.py).
 
 ## Contribution
 
