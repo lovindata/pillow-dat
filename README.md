@@ -55,9 +55,9 @@ Performance benchmarks have been conducted on a computing system equipped with a
 
 |  _In seconds_  | 320 × 320 | 640 × 640 | 960 × 960 | 1280 × 1280 |
 | :------------: | :-------: | :-------: | :-------: | :---------: |
-| DAT light (x2) |   13.7    |   54.9    |   127.2   |    299.3    |
-| DAT light (x3) |   13.2    |   56.5    |     -     |      -      |
-| DAT light (x4) |   12.8    |   56.6    |     -     |      -      |
+| DAT light (x2) |   16.1    |   65.3    |   146.8   |    339.8    |
+| DAT light (x3) |   14.3    |   61.7    |     -     |      -      |
+| DAT light (x4) |   14.0    |   63.0    |     -     |      -      |
 
 The results were compared against the renowned [`OpenCV`](https://opencv.org/) library, utilizing its `EDSR` model known for delivering superior image quality.
 
@@ -67,7 +67,7 @@ The results were compared against the renowned [`OpenCV`](https://opencv.org/) l
 |  EDSR (x3)   |   24.3    |   112.5   |     -     |      -      |
 |  EDSR (x4)   |   23.6    |   111.2   |     -     |      -      |
 
-_Remark_: All speed benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_speed_dat_light.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_speed_dat_light.py) and [benchmark_speed_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_speed_edsr.py).
+_Remark_: All benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_speed_dat_light.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_speed_dat_light.py) and [benchmark_speed_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_speed_edsr.py).
 
 ### Quality
 
@@ -75,7 +75,15 @@ _Remark_: All speed benchmark results presented here are reproducible. For detai
 | :-----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
 | ![DAT light (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine_output.png?raw=true) | ![EDSR (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/lumine_edsr.png?raw=true) |
 
-_Remark_: All quality benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [example.py](https://github.com/lovindata/pillow-dat/blob/main/examples/example.py) and [benchmark_quality_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_quality_edsr.py).
+_Remark_: All benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [example.py](https://github.com/lovindata/pillow-dat/blob/main/examples/example.py) and [benchmark_quality_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_quality_edsr.py).
+
+### Alpha-channel-awareness
+
+|                                         Input                                          |                                             DAT light (x2)                                             |                                            EDSR (x2)                                            |
+| :------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------: |
+| ![Input](https://github.com/lovindata/pillow-dat/blob/main/.github/apple.png?raw=true) | ![DAT light (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/apple_output.png?raw=true) | ![EDSR (x2)](https://github.com/lovindata/pillow-dat/blob/main/.github/apple_edsr.png?raw=true) |
+
+_Remark_: All benchmark results presented here are reproducible. For detailed implementation, please refer to the following files: [benchmark_alpha_channel_awareness_dat_light.py](https://github.com/lovindata/pillow-dat/blob/main/examples/benchmark_alpha_channel_awareness_dat_light.py) and [benchmark_alpha_channel_awareness_edsr.py](https://github.com/lovindata/pillow-dat/blob/main/benchmarks/benchmark_alpha_channel_awareness_edsr.py).
 
 ## Contribution
 

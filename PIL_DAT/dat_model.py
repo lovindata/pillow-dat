@@ -5,7 +5,9 @@ import numpy as np
 import PIL.Image as PIL
 import torch
 import torch.nn as nn
-from PIL.Image import BICUBIC, Image
+from PIL import ImageFilter
+from PIL.Image import BICUBIC, Image, composite
+from PIL.ImageOps import invert
 from torch import Tensor
 
 
@@ -62,7 +64,7 @@ class DATModel(ABC):
             rgba_image = image.convert("RGBA")
             return rgba_image.convert("RGB"), rgba_image.split()[-1]
 
-        def img2tensor(image: Image) -> Tensor:
+        def rgb2tensor(image: Image) -> Tensor:
             input = (
                 torch.tensor(np.array(image), dtype=torch.float32)
                 .permute(2, 0, 1)
@@ -71,20 +73,37 @@ class DATModel(ABC):
             )
             return input
 
-        def tensor2img(tensor: Tensor) -> Image:
+        def tensor2rgb(tensor: Tensor) -> Image:
             tensor = tensor.squeeze(0).clamp(0, 1).permute(1, 2, 0) * 255
             output = PIL.fromarray(tensor.byte().numpy())
             return output
 
+        def merge_rgb_and_alpha(rgb: Image, alpha: Image) -> Image:
+            # Merge rgb and alpha
+            output = rgb.copy()
+            output.putalpha(alpha)
+
+            # Denoise on the alpha edges
+            edges = alpha.filter(ImageFilter.FIND_EDGES)
+            edges = invert(edges)
+            edges = edges.filter(
+                ImageFilter.MinFilter(7)
+            )  # 7 because best experimental thickness
+            output_denoised = output.filter(
+                ImageFilter.MedianFilter(5)
+            )  # 5 because best experimental correctness
+            output = composite(output, output_denoised, edges)
+            return output
+
         source_mode = image.mode
         rgb, alpha = extract_rgb_and_alpha(image)
-        tensor = img2tensor(rgb)
+        tensor = rgb2tensor(rgb)
         with torch.no_grad():
             tensor = self._model(tensor)
-        rgb = tensor2img(tensor)
+        rgb = tensor2rgb(tensor)
         alpha = alpha.resize(rgb.size, BICUBIC)
-        rgb.putalpha(alpha)
-        image = rgb.convert(source_mode)
+        image = merge_rgb_and_alpha(rgb, alpha)
+        image = image.convert(source_mode)
         return image
 
     @property
