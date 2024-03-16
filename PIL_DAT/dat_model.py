@@ -6,7 +6,8 @@ import PIL.Image as PIL
 import torch
 import torch.nn as nn
 from PIL import ImageFilter
-from PIL.Image import BICUBIC, Image
+from PIL.Image import BICUBIC, Image, composite
+from PIL.ImageOps import invert
 from torch import Tensor
 
 
@@ -32,16 +33,12 @@ class DATModel(ABC):
             torch.load(pth_path)["params"]
         )  # Raises error in case of incorrect weights
 
-    def upscale(self, image: Image, post_processing: bool = True) -> Image:
+    def upscale(self, image: Image) -> Image:
         """
         Upscales the given input image using the initialized PyTorch model.
 
         Args:
             image (Image): An instance of PIL Image representing the input image.
-            post_processing (bool, optional): Whether to apply post-processing to the upscaled image.
-                Defaults to True. If set to True, performs median filtering with a kernel size of 3
-                to remove small artifacts in the upscaled image. Set to False for artworks to retain
-                finer details.
 
         Returns:
             Image: An instance of PIL Image representing the upscaled image.
@@ -67,7 +64,7 @@ class DATModel(ABC):
             rgba_image = image.convert("RGBA")
             return rgba_image.convert("RGB"), rgba_image.split()[-1]
 
-        def img2tensor(image: Image) -> Tensor:
+        def rgb2tensor(image: Image) -> Tensor:
             input = (
                 torch.tensor(np.array(image), dtype=torch.float32)
                 .permute(2, 0, 1)
@@ -76,20 +73,36 @@ class DATModel(ABC):
             )
             return input
 
-        def tensor2img(tensor: Tensor) -> Image:
+        def tensor2rgb(tensor: Tensor) -> Image:
             tensor = tensor.squeeze(0).clamp(0, 1).permute(1, 2, 0) * 255
             output = PIL.fromarray(tensor.byte().numpy())
             return output
 
+        def merge_rgb_and_alpha(rgb: Image, alpha: Image) -> Image:
+            # Merge rgb and alpha
+            output = rgb.copy()
+            output.putalpha(alpha)
+
+            # Denoise on the alpha edges
+            edges = alpha.filter(ImageFilter.FIND_EDGES)
+            edges = invert(edges)
+            edges = edges.filter(
+                ImageFilter.MinFilter(7)
+            )  # 7 because best experimental thickness
+            output_denoised = output.filter(
+                ImageFilter.MedianFilter(5)
+            )  # 5 because best experimental correctness
+            output = composite(output, output_denoised, edges)
+            return output
+
         source_mode = image.mode
         rgb, alpha = extract_rgb_and_alpha(image)
-        tensor = img2tensor(rgb)
+        tensor = rgb2tensor(rgb)
         with torch.no_grad():
             tensor = self._model(tensor)
-        rgb = tensor2img(tensor)
+        rgb = tensor2rgb(tensor)
         alpha = alpha.resize(rgb.size, BICUBIC)
-        rgb.putalpha(alpha)
-        image = rgb.filter(ImageFilter.MedianFilter()) if post_processing else rgb
+        image = merge_rgb_and_alpha(rgb, alpha)
         image = image.convert(source_mode)
         return image
 

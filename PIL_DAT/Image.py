@@ -5,19 +5,13 @@ from PIL.Image import Image
 from PIL_DAT.dat_light import DATLight
 
 
-def upscale(
-    image: Image, scale: Literal[2, 3, 4], post_processing: bool = True
-) -> Image:
+def upscale(image: Image, scale: Literal[2, 3, 4]) -> Image:
     """
     Upscales the provided image using the DATLight model.
 
     Args:
         image (Image): An instance of PIL Image representing the input image.
         scale (Literal[2, 3, 4]): The scale factor for upscaling.
-        post_processing (bool, optional): Whether to apply post-processing to the upscaled image.
-            Defaults to True. If set to True, performs median filtering with a kernel size of 3
-            to remove small artifacts in the upscaled image. Set to False for artworks to retain
-            finer details.
 
     Returns:
         Image: An instance of PIL Image representing the upscaled image.
@@ -34,4 +28,4 @@ def upscale(
         >>> input_image = Image.open("input_image.jpg")
         >>> upscaled_image = upscale(input_image, 2)
     """
-    return DATLight(scale).upscale(image, post_processing=post_processing)
+    return DATLight(scale).upscale(image)

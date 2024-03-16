@@ -36,7 +36,7 @@ from PIL.Image import open
 from PIL_DAT.Image import upscale
 
 lumine_image = open(".github/lumine.png")
-lumine_image = upscale(lumine_image, 2, post_processing=False)
+lumine_image = upscale(lumine_image, 2)
 ```
 
 _Remark_: We strongly advocate for the utilization of `DAT light` models owing to their streamlined design and outstanding speed performance. However, should you opt for alternative models, please note that `*.pth` model weights can be accessed via [Google Drive](https://drive.google.com/drive/folders/1ro8bAZxrIEm03eE-7Lc15q9cwE3CJ-oh?usp=sharing).
